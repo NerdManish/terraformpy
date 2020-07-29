@@ -30,4 +30,6 @@ from .resource_collections import ResourceCollection, Variant  # noqa
 
 # add a couple shortcuts
 compile = TFObject.compile
-reset = TFObject.reset
+def reset():
+    TFObject.reset()
+    ResourceCollection.reset()

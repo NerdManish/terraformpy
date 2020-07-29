@@ -44,6 +44,21 @@ class ResourceCollection(Model):
     If the above block was defined within a `Variant('prod')` context then count would be 4, otherwise it would be 2.
     """
 
+    _instances = None
+
+    def __new__(cls, *args, **kwargs):
+        # create the instance
+        inst = super(ResourceCollection, cls).__new__(cls)
+
+        # register it on the class
+        try:
+            cls._instances.append(inst)
+        except AttributeError:
+            cls._instances = [inst]
+
+        # return it
+        return inst
+
     def __init__(self, *args, **kwargs):
         variant_name = kwargs.pop("variant_name", None)
 
@@ -95,6 +110,15 @@ class ResourceCollection(Model):
         resources prior to the compilation occuring.
         """
         pass
+
+    @classmethod
+    def reset(cls):
+        def recursive_reset(cls):
+            cls._instances = None
+            for klass in cls.__subclasses__():
+                recursive_reset(klass)
+
+        recursive_reset(cls)
 
 
 class Variant(object):
